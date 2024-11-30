@@ -185,7 +185,7 @@ impl<R: embedded_io_async::Read> embedded_io_async::Read for MapReadErrorReader<
     }
 }
 
-async fn serve_and_shutdown<State, T: Timer, P: routing::PathRouter<State>, S: io::Socket>(
+pub async fn serve_and_shutdown<State, T: Timer, P: routing::PathRouter<State>, S: io::Socket>(
     Router { router, .. }: &Router<P, State>,
     mut timer: T,
     config: &Config<T::Duration>,
