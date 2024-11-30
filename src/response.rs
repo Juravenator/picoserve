@@ -353,6 +353,20 @@ impl Content for alloc::string::String {
     }
 }
 
+impl<const N: usize> Content for heapless::String<N> {
+    fn content_type(&self) -> &'static str {
+        self.as_str().content_type()
+    }
+
+    fn content_length(&self) -> usize {
+        self.as_str().content_length()
+    }
+
+    async fn write_content<W: Write>(self, writer: W) -> Result<(), W::Error> {
+        self.as_str().write_content(writer).await
+    }
+}
+
 impl<'a> Content for fmt::Arguments<'a> {
     fn content_type(&self) -> &'static str {
         "".content_type()
