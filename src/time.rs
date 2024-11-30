@@ -49,7 +49,7 @@ impl Timer for TokioTimer {
 }
 
 #[cfg(feature = "embassy")]
-pub(crate) struct EmbassyTimer;
+pub struct EmbassyTimer;
 
 #[cfg(feature = "embassy")]
 impl Timer for EmbassyTimer {
