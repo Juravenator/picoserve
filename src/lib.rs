@@ -334,13 +334,18 @@ pub async fn serve_with_state<State, P: routing::PathRouter<State>>(
 }
 
 #[cfg(feature = "embassy")]
+// Awaiting merge from
+// https://github.com/sammhicks/picoserve/pull/52/files
+pub type HackyStack = embassy_net::Stack<'static>;
+
+#[cfg(feature = "embassy")]
 /// Serve `app` with incoming requests. App has a no state.
 /// `task_id` is printed in log messages.
 pub async fn listen_and_serve<P: routing::PathRouter<()>>(
     task_id: impl LogDisplay,
     app: &Router<P, ()>,
     config: &Config<embassy_time::Duration>,
-    stack: &embassy_net::Stack<impl embassy_net::driver::Driver>,
+    stack: &HackyStack,
     port: u16,
     tcp_rx_buffer: &mut [u8],
     tcp_tx_buffer: &mut [u8],
@@ -367,7 +372,7 @@ pub async fn listen_and_serve_with_state<State, P: routing::PathRouter<State>>(
     task_id: impl LogDisplay,
     app: &Router<P, State>,
     config: &Config<embassy_time::Duration>,
-    stack: &embassy_net::Stack<impl embassy_net::driver::Driver>,
+    stack: &HackyStack,
     port: u16,
     tcp_rx_buffer: &mut [u8],
     tcp_tx_buffer: &mut [u8],
@@ -375,7 +380,7 @@ pub async fn listen_and_serve_with_state<State, P: routing::PathRouter<State>>(
     state: &State,
 ) -> ! {
     loop {
-        let mut socket = embassy_net::tcp::TcpSocket::new(stack, tcp_rx_buffer, tcp_tx_buffer);
+        let mut socket = embassy_net::tcp::TcpSocket::new(*stack, tcp_rx_buffer, tcp_tx_buffer);
 
         log_info!("{}: Listening on TCP:{}...", task_id, port);
 
